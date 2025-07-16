@@ -51,7 +51,7 @@ DataCharts是一个专业的数据前处理工具，旨在简化数据分析流程。通过友好的图形用户界
 
 1. **克隆项目**
 ```bash
-git clone https://github.com/your-username/DataCharts.git
+git clone https://github.com/sanmuhhhh/DataCharts.git
 cd DataCharts
 ```
 
