@@ -1,0 +1,14 @@
+PyQt6>=6.4.0
+PyQt6-Qt6>=6.4.0
+PyQt6-Charts>=6.4.0
+matplotlib>=3.7.0
+numpy>=1.24.0
+pandas>=2.0.0
+sympy>=1.12
+scipy>=1.10.0
+httpx>=0.24.0
+requests>=2.31.0
+openpyxl>=3.1.0
+xlrd>=2.0.1
+chardet>=5.0.0
+python-dotenv>=1.0.0

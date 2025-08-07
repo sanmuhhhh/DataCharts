@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataCharts - 数据可视化系统</title>
+    <link rel="stylesheet" href="src/styles/main.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Element Plus CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+</head>
+<body>
+    <div id="app">
+        <!-- 应用容器 -->
+        <div class="main-container">
+            <!-- 顶部导航栏 -->
+            <header class="header">
+                <div class="header-content">
+                    <h1 class="title">DataCharts - 数据可视化系统</h1>
+                    <div class="nav-buttons">
+                        <button class="nav-btn active" data-tab="data">数据导入</button>
+                        <button class="nav-btn" data-tab="function">函数处理</button>
+                        <button class="nav-btn" data-tab="chart">图表配置</button>
+                        <button class="nav-btn" onclick="showExportDialog()">导出</button>
+                        <button class="nav-btn" onclick="showHelpDialog()">帮助</button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 主内容区域 -->
+            <div class="main-content">
+                <!-- 左侧操作面板 -->
+                <aside class="sidebar">
+                    <div class="operation-panel">
+                        <div class="panel-header">
+                            <h3>数据操作面板</h3>
+                        </div>
+                        
+                        <!-- 数据导入面板 -->
+                        <div id="data-panel" class="tab-panel active">
+                            <div class="step-container">
+                                <div class="step-header">
+                                    <h4>1. 选择数据格式</h4>
+                                </div>
+                                <div class="format-options">
+                                    <label><input type="radio" name="format" value="csv" checked> CSV文件</label>
+                                    <label><input type="radio" name="format" value="excel"> Excel文件</label>
+                                    <label><input type="radio" name="format" value="json"> JSON文件</label>
+                                    <label><input type="radio" name="format" value="txt"> 文本文件</label>
+                                    <label><input type="radio" name="format" value="manual"> 手动输入</label>
+                                </div>
+                            </div>
+
+                            <div class="step-container">
+                                <div class="step-header">
+                                    <h4>2. 上传数据</h4>
+                                </div>
+                                <div class="upload-area">
+                                    <input type="file" id="file-input" accept=".csv,.xlsx,.xls,.json,.txt" style="display: none;">
+                                    <div class="upload-drop-zone" onclick="document.getElementById('file-input').click()">
+                                        <div class="upload-icon">97</div>
+                                        <div class="upload-text">点击选择文件或拖拽文件到此处</div>
+                                        <div class="upload-hint">支持 CSV, Excel, JSON, TXT 格式</div>
+                                    </div>
+                                    <textarea id="manual-input" class="manual-input" placeholder="手动输入数据（CSV格式）..." style="display: none;"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="step-container">
+                                <div class="step-header">
+                                    <h4>3. 数据预览</h4>
+                                </div>
+                                <div id="data-preview" class="data-preview">
+                                    <div class="preview-placeholder">暂无数据</div>
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button id="upload-btn" class="btn btn-primary" onclick="uploadData()">上传数据</button>
+                                <button id="validate-btn" class="btn btn-secondary" onclick="validateData()" disabled>验证数据</button>
+                            </div>
+                        </div>
+
+                        <!-- 函数处理面板 -->
+                        <div id="function-panel" class="tab-panel">
+                            <div class="step-container">
+                                <div class="step-header">
+                                    <h4>函数表达式</h4>
+                                </div>
+                                <textarea id="function-input" class="function-input" 
+                                    placeholder="输入数学表达式，例如: sin(x) + cos(y)"></textarea>
+                                <div id="function-suggestions" class="function-suggestions"></div>
+                            </div>
+
+                            <div class="step-container">
+                                <div class="step-header">
+                                    <h4>支持的函数</h4>
+                                </div>
+                                <div id="function-library" class="function-library">
+                                    <div class="function-category">
+                                        <h5>数学函数</h5>
+                                        <div class="function-list">
+                                            <span class="function-tag">sin</span>
+                                            <span class="function-tag">cos</span>
+                                            <span class="function-tag">tan</span>
+                                            <span class="function-tag">log</span>
+                                            <span class="function-tag">exp</span>
+                                            <span class="function-tag">sqrt</span>
+                                        </div>
+                                    </div>
+                                    <div class="function-category">
+                                        <h5>统计函数</h5>
+                                        <div class="function-list">
+                                            <span class="function-tag">mean</span>
+                                            <span class="function-tag">std</span>
+                                            <span class="function-tag">var</span>
+                                            <span class="function-tag">median</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button id="parse-btn" class="btn btn-primary" onclick="parseFunction()">解析函数</button>
+                                <button id="apply-btn" class="btn btn-secondary" onclick="applyFunction()" disabled>应用函数</button>
+                            </div>
+                        </div>
+
+                        <!-- 图表配置面板 -->
+                        <div id="chart-panel" class="tab-panel">
+                            <div class="step-container">
+                                <div class="step-header">
+                                    <h4>图表类型</h4>
+                                </div>
+                                <div class="chart-type-options">
+                                    <label><input type="radio" name="chart-type" value="line" checked> 折线图</label>
+                                    <label><input type="radio" name="chart-type" value="bar"> 柱状图</label>
+                                    <label><input type="radio" name="chart-type" value="scatter"> 散点图</label>
+                                    <label><input type="radio" name="chart-type" value="pie"> 饼图</label>
+                                </div>
+                            </div>
+
+                            <div class="step-container">
+                                <div class="step-header">
+                                    <h4>图表配置</h4>
+                                </div>
+                                <div class="config-form">
+                                    <div class="form-group">
+                                        <label>标题:</label>
+                                        <input type="text" id="chart-title" placeholder="图表标题">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>X轴标签:</label>
+                                        <input type="text" id="chart-x-axis" placeholder="X轴标签">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Y轴标签:</label>
+                                        <input type="text" id="chart-y-axis" placeholder="Y轴标签">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>尺寸:</label>
+                                        <div class="size-inputs">
+                                            <input type="number" id="chart-width" value="800" placeholder="宽度">
+                                            <span>×</span>
+                                            <input type="number" id="chart-height" value="600" placeholder="高度">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button id="create-chart-btn" class="btn btn-primary" onclick="createChart()">生成图表</button>
+                                <button id="export-chart-btn" class="btn btn-secondary" onclick="exportChart()" disabled>导出图表</button>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- 主显示区域 -->
+                <main class="main-display">
+                    <div class="chart-area">
+                        <div class="chart-header">
+                            <h3>图表展示区域</h3>
+                        </div>
+                        <div id="chart-container" class="chart-container">
+                            <div class="welcome-message">
+                                <div class="welcome-icon">96</div>
+                                <h2>欢迎使用 DataCharts</h2>
+                                <p>请先导入数据，然后选择函数处理（可选），最后生成图表</p>
+                                <div class="workflow-steps">
+                                    <div class="workflow-step">
+                                        <span class="step-number">1</span>
+                                        <span class="step-text">导入数据</span>
+                                    </div>
+                                    <div class="workflow-arrow">→</div>
+                                    <div class="workflow-step">
+                                        <span class="step-number">2</span>
+                                        <span class="step-text">处理数据</span>
+                                    </div>
+                                    <div class="workflow-arrow">→</div>
+                                    <div class="workflow-step">
+                                        <span class="step-number">3</span>
+                                        <span class="step-text">生成图表</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 图表将在这里显示 -->
+                            <canvas id="chart-canvas" style="display: none;"></canvas>
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+            <!-- 底部状态栏 -->
+            <footer class="footer">
+                <div class="footer-content">
+                    <div class="console-log">
+                        <div class="log-header">控制台日志</div>
+                        <div id="log-container" class="log-container">
+                            <div class="log-entry info">系统已就绪</div>
+                        </div>
+                    </div>
+                    <div class="status-bar">
+                        <span id="system-status">状态: 就绪</span>
+                        <span>版本: v0.1.0</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- 加载应用脚本 -->
+    <script type="module" src="src/app.js"></script>
+</body>
+</html>
