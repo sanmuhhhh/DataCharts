@@ -498,7 +498,7 @@ def main():
     
     # 设置应用程序信息
     app.setApplicationName("DataCharts System")
-    app.setApplicationVersion("0.1.0")
+    app.setApplication版本("0.1.0")
     app.setOrganizationName("DataCharts Team")
     
     # 设置应用程序样式

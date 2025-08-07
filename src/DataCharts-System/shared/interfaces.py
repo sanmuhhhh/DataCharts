@@ -98,6 +98,33 @@ class FunctionProcessor:
             return self._impl.get_supported_functions()
         else:
             return ['sin', 'cos', 'tan', 'log', 'exp', 'sqrt', 'mean', 'std']  # 占位符列表
+    
+    def analyze_expression(self, expression: str) -> Dict[str, Any]:
+        """分析表达式的详细信息"""
+        if self._impl:
+            return self._impl.analyze_expression(expression)
+        else:
+            return {
+                'expression': expression,
+                'is_valid': True,
+                'variables': [],
+                'parameters': {},
+                'complexity': {},
+                'recommendations': []
+            }
+    
+    def validate_function_with_data(self, expression: str, data: DataSource) -> Dict[str, Any]:
+        """验证函数表达式是否可以应用到指定数据"""
+        if self._impl:
+            return self._impl.validate_function_with_data(expression, data)
+        else:
+            return {
+                'is_valid': True,
+                'available_variables': [],
+                'missing_variables': [],
+                'data_columns': [],
+                'suggestions': []
+            }
 
 
 class ChartGenerator:
